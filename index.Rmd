@@ -46,9 +46,18 @@ ggpairs(Boston, mapping = aes(alpha=0.3), lower = list(combo = wrap("facethist",
 
 Hypothesis: High crime rate is predicted by lower status of population (lstat), low value of homes (medv), full-value property tax rate (tax) and pupil-teacher ratio (ptratio). These variables seem to be somewhat correlated with crime.
 
+```{r}
+library(dplyr)
+attach(Boston)
+modelvars <- c("lstat", "medv", "tax", "ptratio", "high_crime")
+modeldata <- select(Boston, one_of(modelvars))
+summary(modeldata)
+```
+
+
 Logistic regression model to test the hypothesis:
 ```{r}
-model <- glm(high_crime ~ lstat + medv + tax + ptratio, data = Boston, family="binomial")
+model <- glm(high_crime ~ lstat + medv + tax + ptratio, data = modeldata, family="binomial")
 ```
 Summary and coefficients of the model:
 ```{r}
@@ -57,9 +66,49 @@ coef(model)
 ```
 Let´s compute odds ratios and confidence intervals for the model:
 ```{r}
-library(dplyr)
 OR <- coef(model) %>% exp
 CI<- confint(model) %>% exp
 cbind(OR, CI)
 ```
 We can interpret from the odds ratios and CIs that lower status of population, full-value property-tax rate per $10,000 and pupil-teacher ratio by town are associated with higher crime rate. These variables have ORs and CI´s over 1.  
+
+Nex we´ll use the model to predict high crime. We will see whether using the model is better than guessing. We will add the predicted probabilities to the modeldata.
+
+```{r}
+probabilities <- predict(model, type = "response")
+modeldata <- mutate(modeldata, probability = probabilities)
+```
+We will use the probabilities to make predictions of high crime.
+```{r}
+modeldata <- mutate(modeldata, prediction = probability>0.5)
+select(modeldata, lstat, medv, tax, ptratio, high_crime, probability, prediction) %>% tail(15)
+```
+
+Let´s tabulate the target variable versus the predictions:
+
+```{r}
+table(high_crime = modeldata$high_crime, prediction = modeldata$prediction)
+table(high_crime = modeldata$high_crime, prediction = modeldata$prediction) %>% prop.table %>% addmargins()
+```
+From the first table we see that high crime is correctly predicted by the model in 368/379 false cases and in 126/127 of true cases. The model is much more accurate than just guessing.
+
+The second table gives the proportions of FALSE and TRUE predictions and the target variable high_crime.
+
+Plot high_crime vs probability:
+```{r}
+g <- ggplot(modeldata, aes(x = probability, y = high_crime, col=prediction))
+g + geom_point()
+```
+We can see that the model is better in predicting correctly TRUE values than FALSE values.
+
+Next we´ll construct a loss function which shows the incorrectly classified observations as loss and gives a measure of the accuracy of the model.
+```{r}
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
+
+loss_func(class = modeldata$high_crime, prob = modeldata$probability)
+```
+The output is the average prediction error.
+
