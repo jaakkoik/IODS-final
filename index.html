@@ -125,20 +125,22 @@ $(document).ready(function () {
 
 
 <p>Data: Boston.</p>
-<p>Wrangling:</p>
-<div id="load-boston-data-from-mass-library" class="section level1">
-<h1>Load Boston data from MASS library:</h1>
+<div id="wrangling" class="section level2">
+<h2>Wrangling:</h2>
+<p>Load Boston data from MASS library:</p>
 <p>library(MASS)</p>
 <p>summary(Boston)</p>
 <p>str(Boston)</p>
 </div>
-<div id="create-new-variable-high_crime-which-is-true-if-the-crime-is-above-3rd-quartile" class="section level1">
-<h1>Create new variable high_crime which is true if the crime is above 3rd quartile:</h1>
+<div id="create-new-variable-high_crime-which-is-true-if-the-crime-is-above-3rd-quartile" class="section level2">
+<h2>Create new variable high_crime which is true if the crime is above 3rd quartile:</h2>
 <p>library(dplyr)</p>
 <p>Boston &lt;- mutate(Boston, high_crime= crim &gt; 3.67708)</p>
 <p>summary(Boston$high_crime)</p>
 <p>write.csv(Boston, file=“Bostoncrime.csv”)</p>
-<p>End of wrangling.</p>
+</div>
+<div id="end-of-wrangling." class="section level2">
+<h2>End of wrangling.</h2>
 <p>Question: what factors are associated with high crime rate?</p>
 <p>Plan: to test the question with logistic regression. The variable high_crime is true if the crime rate in the area is above the 3rd quartile of the average crime rate.</p>
 <p>First looking at the distributions and correlations between high crime and other variables:</p>

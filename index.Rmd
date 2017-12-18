@@ -7,9 +7,9 @@ output: html_document
 ---
 Data: Boston.
 
-Wrangling:
+## Wrangling:
 
-# Load Boston data from MASS library:
+Load Boston data from MASS library:
 
 library(MASS)
 
@@ -17,7 +17,7 @@ summary(Boston)
 
 str(Boston)
 
-# Create new variable high_crime which is true if the crime is above 3rd quartile:
+## Create new variable high_crime which is true if the crime is above 3rd quartile:
 
 library(dplyr)
 
@@ -27,7 +27,7 @@ summary(Boston$high_crime)
 
 write.csv(Boston, file="Bostoncrime.csv")
 
-End of wrangling.
+## End of wrangling.
 
 Question: what factors are associated with high crime rate? 
 
