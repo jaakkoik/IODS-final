@@ -8,4 +8,7 @@ library(dplyr)
 Boston <- mutate(Boston, high_crime= crim > 3.67708)
 summary(Boston$high_crime)
 
+write.csv(Boston, file="Bostoncrime.csv")
+
+
 

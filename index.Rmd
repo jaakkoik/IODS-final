@@ -12,22 +12,40 @@ Question: what factors are associated with high crime rate?
 Plan: to test the question with logistic regression. The variable high_crime is true if the crime rate in the area is above the 3rd quartile of the average crime rate.
 
 First looking at the distributions and correlations between high crime and other variables:
+
 CRIM - per capita crime rate by town
+
 ZN - proportion of residential land zoned for lots over 25,000 sq.ft.
+
 INDUS - proportion of non-retail business acres per town.
+
 CHAS - Charles River dummy variable (1 if tract bounds river; 0 otherwise)
+
 NOX - nitric oxides concentration (parts per 10 million)
+
 RM - average number of rooms per dwelling
+
 AGE - proportion of owner-occupied units built prior to 1940
+
 DIS - weighted distances to five Boston employment centres
+
 RAD - index of accessibility to radial highways
+
 TAX - full-value property-tax rate per $10,000
+
 PTRATIO - pupil-teacher ratio by town
+
 B - 1000(Bk - 0.63)^2 where Bk is the proportion of blacks by town
+
 LSTAT - % lower status of the population
+
 MEDV - Median value of owner-occupied homes in $1000's
 
 ```{r}
+Boston <- read.csv(file="~/Documents/Jaakon tutkimus/Open data kurssi s2017/GitHub/IODS-final/Bostoncrime.csv", header=T, sep = ",")
+library(dplyr)
+library(ggplot2)
+library(GGally)
 glimpse(Boston)
 ```
 
@@ -39,7 +57,7 @@ cor(Boston)
 ```
 
 Visualization of correlations:
-```{r}
+```{r fig.height=9, fig.width=9}
 ggpairs(Boston, mapping = aes(alpha=0.3), lower = list(combo = wrap("facethist", bins = 20)))
 ```
 
@@ -47,8 +65,7 @@ ggpairs(Boston, mapping = aes(alpha=0.3), lower = list(combo = wrap("facethist",
 Hypothesis: High crime rate is predicted by lower status of population (lstat), low value of homes (medv), full-value property tax rate (tax) and pupil-teacher ratio (ptratio). These variables seem to be somewhat correlated with crime.
 
 ```{r}
-library(dplyr)
-attach(Boston)
+
 modelvars <- c("lstat", "medv", "tax", "ptratio", "high_crime")
 modeldata <- select(Boston, one_of(modelvars))
 summary(modeldata)
@@ -78,7 +95,7 @@ Nex we´ll use the model to predict high crime. We will see whether using the mo
 probabilities <- predict(model, type = "response")
 modeldata <- mutate(modeldata, probability = probabilities)
 ```
-We will use the probabilities to make predictions of high crime.
+Using the probabilities to make predictions of high crime.
 ```{r}
 modeldata <- mutate(modeldata, prediction = probability>0.5)
 select(modeldata, lstat, medv, tax, ptratio, high_crime, probability, prediction) %>% tail(15)
